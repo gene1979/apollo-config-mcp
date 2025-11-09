@@ -2,14 +2,14 @@
 
 Minimal Claude MCP server for [Apollo Config Service](https://github.com/apolloconfig/apollo).
 
-The project exposes the Apollo Config HTTP API as a Claude MCP tool so Claude Code / Codex can load
-configuration namespaces directly from Apollo without running an extra HTTP proxy.
+This service exposes the Apollo Config HTTP API as a Claude MCP tool so Claude Code / Codex can load
+configuration namespaces directly from Apollo.
 
 ## Features
 
-- Implements a lightweight MCP server over stdio (no local web server required)
+- Implements the Claude MCP HTTP interface (`/schema`, `/tools`, `/call`)
 - Provides a `getApolloConfig` tool that wraps Apollo's `GET /configs/{appId}/{cluster}/{namespace}` endpoint
-- Supports environment-based configuration via `.env` or explicit MCP server environment variables
+- Supports environment-based configuration via `.env`
 - Simple in-memory response cache with a 60 second TTL for repeated lookups
 
 ## Getting started
@@ -17,7 +17,7 @@ configuration namespaces directly from Apollo without running an extra HTTP prox
 ### Prerequisites
 
 - Node.js 18 or newer
-- `pnpm` (or any Node package manager — examples below use `pnpm`)
+- `pnpm` (or `npm`/`yarn`, but examples below use `pnpm`)
 
 ### Installation
 
@@ -27,7 +27,7 @@ pnpm install
 
 ### Configuration
 
-Copy `.env.example` to `.env` and set the Apollo Config base URL, or provide the variable directly in your MCP configuration:
+Copy `.env.example` to `.env` and adjust the Apollo Config base URL:
 
 ```bash
 cp .env.example .env
@@ -38,40 +38,38 @@ Required variables:
 
 - `APOLLO_BASE_URL` – Base URL of your Apollo Config Service instance (e.g. `http://apollo-configservice.company.com`)
 
-### Running the MCP server locally
+Optional variables:
+
+- `PORT` – Port for the MCP server (defaults to `3333`)
+
+### Running the MCP server
 
 ```bash
 pnpm start
 ```
 
-The process will wait for MCP messages on stdin/stdout. When running manually you can stop it with `Ctrl+C`.
+You should see console output similar to:
+
+```
+[apollo-config-mcp] Server listening on port 3333
+```
+
+### MCP endpoints
+
+- `GET /schema` – Returns the MCP schema definition
+- `GET /tools` – Lists supported tools
+- `POST /call` – Executes a tool (expects `{ "name": "toolName", "arguments": { ... } }`)
 
 ### Adding to Claude Code
 
-Add an entry to your `claude_desktop_config.json` (or the equivalent configuration file in Claude Code) pointing to the project directory:
-
-```json
-{
-  "mcpServers": {
-    "apollo-config": {
-      "command": "node",
-      "args": ["index.js"],
-      "cwd": "/absolute/path/to/apollo-config-mcp",
-      "env": {
-        "APOLLO_BASE_URL": "http://apollo-configservice.company.com"
-      }
-    }
-  }
-}
-```
-
-Alternatively, you can rely on a `.env` file in the project directory and omit the `env` block.
-
-Once configured, reload Claude Code and it will detect the `getApolloConfig` tool.
+1. Start the MCP server locally (`pnpm start`).
+2. In Claude Code, open **Settings → MCP Servers**.
+3. Add a new HTTP MCP server pointing to `http://localhost:3333` (or your configured port).
+4. Claude Code will automatically load the schema and available tools.
 
 ### Example tool invocation
 
-Inside Claude Code (after adding the MCP server), run:
+With the server running, Claude Code can invoke the tool via MCP:
 
 ```
 getApolloConfig appId="my-app" cluster="default" namespace="application"

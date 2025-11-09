@@ -1,15 +1,14 @@
 {
-  "$schema": "https://raw.githubusercontent.com/modelcontextprotocol/spec/main/schemas/server-schema.json",
+  "$schema": "https://raw.githubusercontent.com/anthropics/anthropic-sdk-python/main/anthropic/cli/schemas/mcp-schema.json",
   "server": {
     "name": "apollo-config-mcp",
-    "version": "0.1.0",
-    "description": "Expose Apollo Config Service namespaces as Claude MCP tools over stdio."
+    "version": "0.1.0"
   },
   "tools": [
     {
       "name": "getApolloConfig",
       "description": "Fetch configuration data from Apollo Config Service for the given appId, cluster, and namespace.",
-      "inputSchema": {
+      "input_schema": {
         "type": "object",
         "required": ["appId", "cluster", "namespace"],
         "properties": {

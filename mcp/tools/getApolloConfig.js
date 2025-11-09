@@ -7,15 +7,12 @@ function createCacheKey(appId, cluster, namespace) {
 
 async function fetchConfig(baseUrl, appId, cluster, namespace) {
   if (!baseUrl) {
-    const error = new Error('APOLLO_BASE_URL is not configured.');
+    const error = new Error('APOLLO_BASE_URL is not configured on the server.');
     error.statusCode = 500;
     throw error;
   }
 
-  const endpoint = new URL(
-    `/configs/${encodeURIComponent(appId)}/${encodeURIComponent(cluster)}/${encodeURIComponent(namespace)}`,
-    baseUrl,
-  );
+  const endpoint = new URL(`/configs/${encodeURIComponent(appId)}/${encodeURIComponent(cluster)}/${encodeURIComponent(namespace)}`, baseUrl);
 
   const response = await fetch(endpoint, {
     method: 'GET',
@@ -29,7 +26,7 @@ async function fetchConfig(baseUrl, appId, cluster, namespace) {
     error.statusCode = response.status;
     try {
       error.details = await response.json();
-    } catch (err) {
+    } catch (_err) {
       error.details = await response.text();
     }
     throw error;
