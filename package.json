@@ -1,0 +1,13 @@
+{
+  "name": "apollo-config-mcp",
+  "version": "0.1.0",
+  "description": "Claude MCP server for Apollo Config Service",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

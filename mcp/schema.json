@@ -1,0 +1,32 @@
+{
+  "$schema": "https://raw.githubusercontent.com/modelcontextprotocol/spec/main/schemas/server-schema.json",
+  "server": {
+    "name": "apollo-config-mcp",
+    "version": "0.1.0",
+    "description": "Expose Apollo Config Service namespaces as Claude MCP tools over stdio."
+  },
+  "tools": [
+    {
+      "name": "getApolloConfig",
+      "description": "Fetch configuration data from Apollo Config Service for the given appId, cluster, and namespace.",
+      "inputSchema": {
+        "type": "object",
+        "required": ["appId", "cluster", "namespace"],
+        "properties": {
+          "appId": {
+            "type": "string",
+            "description": "Apollo application ID."
+          },
+          "cluster": {
+            "type": "string",
+            "description": "Apollo cluster name (often 'default')."
+          },
+          "namespace": {
+            "type": "string",
+            "description": "Apollo namespace name (e.g., 'application')."
+          }
+        }
+      }
+    }
+  ]
+}
